@@ -5,34 +5,48 @@ import { RootState } from '../app/store';
 
 const TagsContainer = styled.div`
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column;
 `
 
-const Tag = styled.a`
+export const Tag = styled.a<{ outline?: boolean }>`
     font-size: .75em;
     margin: 0 5px 5px 0;
-    background-color: ${props => props.theme.primaryColor};
+    background-color: ${props => !props.outline && props.theme.primaryColor};
+    border: ${props => props.outline && `1px solid ${props.theme.primaryColor}`};
+    color: ${props => !props.outline && 'white'};
     border-radius: 10px;
     padding: 5px;
-    color: white;
+
+    &:hover {
+        cursor: pointer;
+    }
 `
 
 const TagsHeader = styled.p`
     margin: 0 0 10px;
 `
 
-export const Tags: React.FC = () => {
+const TagsList = styled.div`
+    display: flex;
+    flex-flow: row wrap;
+`
+
+interface TagsProps {
+    onTagSelect: (tagName: string) => void,
+}
+
+export const Tags: React.FC<TagsProps> = ({ onTagSelect }) => {
 
     const tags = useSelector<RootState, string[]>(state => state.articles.tags);
 
     return (
-        <>
+        <TagsContainer>
             <TagsHeader>Popular tags</TagsHeader>
-            <TagsContainer>
+            <TagsList>
                 {tags.map(tag => 
-                    <Tag>{tag}</Tag>
+                    <Tag onClick={() => onTagSelect(tag)}>{tag}</Tag>
                 )}
-            </TagsContainer>
-        </>
+            </TagsList>
+        </TagsContainer>
     )
 }

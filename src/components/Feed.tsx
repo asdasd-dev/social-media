@@ -1,9 +1,10 @@
-import { EnhancedStore } from '@reduxjs/toolkit';
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import {  useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../app/store';
 import { Article } from '../features/articles/articlesSlice'
+import { User } from '../features/userSlice';
+import { FeedCard } from './FeedCard';
 
 const FeedContainer = styled.div`
 `
@@ -26,29 +27,50 @@ const TagLink = styled.a<{selected?: boolean}>`
     border-bottom: 1px solid ${props.theme.primaryColor};
     `}
 `
+interface FeedProps {
+    selectedTag?: string,
+    removeTag: () => void
+}
 
-export const Feed: React.FC = () => {
+export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
     
-    const selectedTag = useSelector<RootState, string | null>(state => state.articles.selectedTag);
     const articles = useSelector<RootState, Article[]>(state => state.articles.articles);
+    const user = useSelector<RootState, User>(state => state.user);
 
-    let articlesList = articles;
+    const [articlesList, setArticlesList] = useState(articles);
+    const [selectedTab, setSelectedTab] = useState<'global' | 'user' | 'tag'>('global')
 
-    if (selectedTag) {
-        articlesList = articles.filter(article => article.tags.includes(selectedTag))
+    useEffect(() => {
+        if (selectedTag) {
+            setArticlesList(articles.filter(article => article.tags.includes(selectedTag)))
+            setSelectedTab('tag');
+        }
+    }, [selectedTag])
+
+    const onGlobalClick = () => {
+        removeTag();
+        setArticlesList(articles);
+        setSelectedTab('global'); 
+    }
+
+    const onYourFeedClick = () => {
+        removeTag();
+        setArticlesList(articles.filter(article => article.author === user.login));
+        setSelectedTab('user');
     }
 
     return (
         <FeedContainer>
             <FeedTags>
-                <TagLink selected={!Boolean(selectedTag)}>Global Feed</TagLink>
+                { user.type === 'authenticated' && 
+                <TagLink selected={selectedTab === 'user'} onClick={() => onYourFeedClick()}>Your&nbsp;Feed</TagLink>
+                }
+                <TagLink selected={selectedTab === 'global'} onClick={() => onGlobalClick()}>Global&nbsp;Feed</TagLink>
                 {selectedTag && 
-                <TagLink selected>{selectedTag}</TagLink>}
+                <TagLink selected={selectedTab === 'tag'}>{selectedTag}</TagLink>}
             </FeedTags>
             {articlesList.map(article => 
-                <div>
-                    <pre>{JSON.stringify(article, null, 2)}</pre>
-                </div>
+                <FeedCard article={article} />
             )}
         </FeedContainer>
     )

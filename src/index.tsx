@@ -6,16 +6,19 @@ import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from 'styled-components';
 import store from './app/store'
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const theme = {
-  primaryColor: '#005AB5',
+  primaryColor: '#005AB5'
 }
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

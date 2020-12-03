@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface Article {
+    id: number,
     author: string,
     date: string,
     title: string,
@@ -8,13 +9,20 @@ export interface Article {
     tags: string[]
 }
 
-const initialState: any = {
-    tags: ['firstT', 'sectondT', 'thirdT', 'fourthT', 'fifthT'],
-    selectedTag: null,
+export interface ArticlesState {
+    tags: string[],
+    articles: Article[],
+}
+
+const initialState: ArticlesState = {
+    tags: ['firstT', 'secondT', 'thirdT', 'fourthT', 'fifthT'],
     articles: [
-        { author: 'Asd', date: '2012-05-05', title: 'Title1', content: 'Content1', tags: ['firstT', 'secondT'] },
-        { author: 'Bsd', date: '2012-05-06', title: 'Title2', content: 'Content2', tags: ['firstT'] },
-        { author: 'Csd', date: '2012-05-07', title: 'Title3', content: 'Content3', tags: ['secondT'] }
+        { id: 1, author: 'Asd', date: '2012-05-05', title: 'Title1', content: 'Content1 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Optio repellat voluptates sapiente ducimus, accusamus alias repudiandae dicta a quam! Necessitatibus magnam suscipit, totam vitae odit molestias dolore vel nam culpa.', 
+        tags: ['firstT', 'secondT'] },
+        { id: 2, author: 'Bsd', date: '2012-05-06', title: 'Title2', content: 'Content2 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Optio repellat voluptates sapiente ducimus, accusamus alias repudiandae dicta a quam! Necessitatibus magnam suscipit, totam vitae odit molestias dolore vel nam culpa.', 
+        tags: ['firstT'] },
+        { id: 3, author: 'Csd', date: '2012-05-07', title: 'Title3', content: 'Content3 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Optio repellat voluptates sapiente ducimus, accusamus alias repudiandae dicta a quam! Necessitatibus magnam suscipit, totam vitae odit molestias dolore vel nam culpa.', 
+        tags: ['secondT'] }
     ]
 }
 
@@ -22,7 +30,6 @@ const articlesSlice = createSlice({
     name: 'articles',
     initialState,
     reducers: {
-
     }
 })
 

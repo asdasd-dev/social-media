@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NavContainer = styled.div`
@@ -21,6 +22,7 @@ const Logo = styled.div `
     font-size: 1.25em;
     font-weight: 600;
     color: ${props => props.theme.primaryColor};
+    cursor: pointer;
 `
 
 const Links = styled.div`
@@ -30,19 +32,22 @@ const Links = styled.div`
     align-items: center;
 `
 
-const NavLink = styled.a`
+const NavLink = styled(Link)`
     text-decoration: none;
     color: inherit;
 `
 
 export const Navbar: React.FC = () => {
+
+    const history = useHistory();
+
     return (
         <NavContainer>
-            <Logo>I'm poster</Logo>
+            <Logo onClick={() => history.push('/')}>I'm poster</Logo>
             <Links>
-                <NavLink href="#">Home</NavLink>
-                <NavLink href="#">Sign in</NavLink>
-                <NavLink href="#">Sign up</NavLink>
+                <NavLink to='/'>Home</NavLink>
+                <NavLink to='/signin'>Sign in</NavLink>
+                <NavLink to='/signup'>Sign up</NavLink>
             </Links>
         </NavContainer>
     )
