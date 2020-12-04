@@ -7,6 +7,19 @@ import { ThemeProvider } from 'styled-components';
 import store from './app/store'
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom'
+import axios from 'axios'
+
+// set authorization token if already exists in local storage
+let token = localStorage.getItem('token');
+if (token) {
+  axios.interceptors.request.use(function (config) {
+    config.headers['x-access-token'] = token;
+    return config;
+  }, function (error) {
+    return Promise.reject(error);
+  });
+}
+
 
 const theme = {
   primaryColor: '#005AB5'
