@@ -3,7 +3,7 @@ import {  useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../app/store';
 import { Article } from '../features/articles/articlesSlice'
-import { User } from '../features/userSlice';
+import { User, UserState, UserStatus } from '../features/userSlice';
 import { FeedCard } from './FeedCard';
 
 const FeedContainer = styled.div`
@@ -35,7 +35,8 @@ interface FeedProps {
 export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
     
     const articles = useSelector<RootState, Article[]>(state => state.articles.articles);
-    const user = useSelector<RootState, User>(state => state.user);
+    const user = useSelector<RootState, User | undefined>(state => state.user.user);
+    const userState = useSelector<RootState, UserStatus>(state => state.user.status);
 
     const [articlesList, setArticlesList] = useState(articles);
     const [selectedTab, setSelectedTab] = useState<'global' | 'user' | 'tag'>('global')
@@ -55,14 +56,14 @@ export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
 
     const onYourFeedClick = () => {
         removeTag();
-        setArticlesList(articles.filter(article => article.author === user.login));
+        setArticlesList(articles.filter(article => article.author === user?.username));
         setSelectedTab('user');
     }
 
     return (
         <FeedContainer>
             <FeedTags>
-                { user.type === 'authenticated' && 
+                { userState !== 'guest' && 
                 <TagLink selected={selectedTab === 'user'} onClick={() => onYourFeedClick()}>Your&nbsp;Feed</TagLink>
                 }
                 <TagLink selected={selectedTab === 'global'} onClick={() => onGlobalClick()}>Global&nbsp;Feed</TagLink>

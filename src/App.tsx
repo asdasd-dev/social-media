@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import styled from 'styled-components';
 import { Navbar } from './components/Navbar'
 import { useSelector } from 'react-redux';
 import { RootState } from './app/store';
-import { User } from './features/userSlice';
+import { UserStatus } from './features/userSlice';
 import { Route, Switch } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { SignUpPage } from './pages/SignUpPage';
@@ -64,14 +64,14 @@ const BannerHeader = styled(Header)`
 
 export const App: React.FC = () => {
 
-  const user = useSelector<RootState, User>(state => state.user);
+  const userStatus = useSelector<RootState, UserStatus>(state => state.user.status);
 
   return (
     <AppContainer>
       <Navbar />
       <Switch>
         <Route exact path="/">
-          {user.type === 'guest' && 
+          {userStatus === 'guest' && 
           <BannerHeader>
             <Content>
               <h1>I'm poster</h1>

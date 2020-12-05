@@ -1,5 +1,6 @@
 import { unwrapResult } from '@reduxjs/toolkit';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import { useAppDispatch } from '../app/store';
 import { signin } from '../features/userSlice';
 import { Input, Button, SignUpPageContainer } from './SignUpPage';
@@ -14,7 +15,11 @@ export const SignInPage: React.FC<SignInPageProps> = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [isError, setIsError] = useState(false);
+    const errorMessage = useRef<string>('');
+
     const dispatch = useAppDispatch();
+    const history = useHistory();
     
 
     const handleSubmit = (e: React.MouseEvent) => {
@@ -23,10 +28,16 @@ export const SignInPage: React.FC<SignInPageProps> = () => {
             .then(unwrapResult)
             .then(result => {
                 console.log(result);
+                history.push('/');
             })
             .catch(error => {
-                console.log(error);
+                errorMessage.current = error.message;
+                setIsError(true);
             })
+    }
+
+    const handleInputFocus = (e: React.SyntheticEvent) => {
+        setIsError(false);
     }
 
     return (
@@ -34,8 +45,9 @@ export const SignInPage: React.FC<SignInPageProps> = () => {
             <h1>Sign in</h1>
             <p><a>Need an account?</a></p>
             <form>
-                <Input type="text" name='username' placeholder='Username' onChange={e => setUsername(e.target.value)}/>
-                <Input type="password" name='password' placeholder='Password' onChange={e => setPassword(e.target.value)}/>
+                <Input type="text" name='username' placeholder='Username' onFocus={handleInputFocus} onChange={e => setUsername(e.target.value)}/>
+                <Input type="password" name='password' placeholder='Password' onFocus={handleInputFocus} onChange={e => setPassword(e.target.value)}/>
+                {isError && <p>{errorMessage.current}</p>}
                 <Button type="submit" 
                     onClick={handleSubmit}>
                     Sign in

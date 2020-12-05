@@ -1,11 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { user } from '../server/models';
+import usersSlice from './usersSlice';
 
 
-export interface User {
-    type: 'guest' | 'authenticated' | 'admin',
-    login?: string,
+export interface UserState {
+    status: UserStatus,
+    user?: User
 }
+
+export type User = {
+    id: string,
+    username: string,
+    email: string,
+    roles: string[]
+}
+
+export type UserStatus = 'guest' | 'user' | 'admin';
 
 interface SignupData {
     username: string;
@@ -27,38 +38,63 @@ export const signup = createAsyncThunk(
 
 export const signin = createAsyncThunk(
     'user/signin',
-    async (data: {username: string, password: string}) => {
+    async (data: {username: string, password: string}, thunkApi) => {
+
         try {
             const response = await axios.post('http://localhost:8080/api/auth/signin', data);
-            localStorage.setItem('token', response.data.accessToken);
+
+            localStorage.setItem('user', JSON.stringify(response.data));
 
             // send x-access-token with all requests
-            axios.interceptors.request.use(function (config) {
+            axios.interceptors.request.use(config => {
                 config.headers['x-access-token'] = response.data.accessToken;
                 return config;
-            }, function (error) {
+            }, error => {
                 return Promise.reject(error);
             });
 
             return response.data;
         }
         catch (err) {
-            return err.response.data;
+            const response = err.response;
+
+            if (response.status >= 400 && response.status <= 500) {
+                return thunkApi.rejectWithValue(response.data);
+            }
         }
     }
 )
 
-const initialState: User = {
-    type: 'guest'
+const initialState: UserState = {
+    status: 'guest'
+}
+
+let localStorageUser = localStorage.getItem('user');
+
+if (localStorageUser) {
+    let userObject = JSON.parse(localStorageUser);
+    initialState.user = userObject as User;
+    initialState.status = initialState.user.roles.includes('ROLE_ADMIN') ? 'admin' : 'user';
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+        logout: state => {
+            state.status = 'guest';
+            localStorage.removeItem('user');
+            delete state.user;
+        }
     },
-    extraReducers: {
+    extraReducers: builder => {
+        builder.addCase(signin.fulfilled, (state, action) => {
+            state.status = action.payload.roles.includes('ROLE_ADMIN') ? 'admin' : 'user'
+            state.user = action.payload;
+        })
     }
 })
 
 export default userSlice.reducer;
+
+export const { logout } = userSlice.actions; 

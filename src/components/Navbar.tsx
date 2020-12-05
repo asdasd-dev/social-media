@@ -1,6 +1,9 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { RootState } from '../app/store';
+import { logout, UserStatus } from '../features/userSlice';
 
 const NavContainer = styled.div`
     display: flex;
@@ -39,15 +42,34 @@ const NavLink = styled(Link)`
 
 export const Navbar: React.FC = () => {
 
+    const userState = useSelector<RootState, UserStatus>(state => state.user.status)
+
     const history = useHistory();
+    const dispatch = useDispatch();
+
+    const handleLogoutClick = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        dispatch(logout());
+        history.push('/');
+    } 
 
     return (
         <NavContainer>
             <Logo onClick={() => history.push('/')}>I'm poster</Logo>
             <Links>
                 <NavLink to='/'>Home</NavLink>
-                <NavLink to='/signin'>Sign in</NavLink>
-                <NavLink to='/signup'>Sign up</NavLink>
+                {userState === 'guest' &&
+                <>
+                    <NavLink to='/signin'>Sign in</NavLink>
+                    <NavLink to='/signup'>Sign up</NavLink>
+                </>
+                }
+                {userState === 'user' &&
+                    <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: user dropdown)</NavLink>
+                }
+                {userState === 'admin' &&
+                    <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: admin dropdown)</NavLink>
+                }
             </Links>
         </NavContainer>
     )
