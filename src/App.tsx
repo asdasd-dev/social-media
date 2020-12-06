@@ -3,13 +3,16 @@ import './App.css';
 import styled from 'styled-components';
 import { Navbar } from './components/Navbar'
 import { useSelector } from 'react-redux';
-import { RootState } from './app/store';
+import { RootState, useAppDispatch } from './app/store';
 import { UserStatus } from './features/userSlice';
 import { Route, Switch } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { SignUpPage } from './pages/SignUpPage';
 import { SignInPage } from './pages/SignInPage';
 import { ArticlePage } from './pages/ArticlePage';
+import { PostArticlePage } from './pages/PostArticlePage';
+import { fetchUsers, UserPublicInfo } from './features/usersSlice';
+import { Article, fetchArticles } from './features/articles/articlesSlice';
 
 
 const AppContainer = styled.div`
@@ -65,6 +68,12 @@ const BannerHeader = styled(Header)`
 export const App: React.FC = () => {
 
   const userStatus = useSelector<RootState, UserStatus>(state => state.user.status);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+    dispatch(fetchArticles());
+  }, [dispatch])
 
   return (
     <AppContainer>
@@ -95,6 +104,11 @@ export const App: React.FC = () => {
         </Route>
         <Route path="/article/:articleId">
           <ArticlePage />
+        </Route>
+        <Route exact path="/create-article">
+          <Content>
+            <PostArticlePage />
+          </Content>
         </Route>
       </Switch>
     </AppContainer>

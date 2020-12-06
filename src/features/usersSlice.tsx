@@ -1,29 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios';
 
 export interface UserPublicInfo {
     login: string,
     avatar: string
 }
 
-const initialState: UserPublicInfo[] = [
-    {
-        login: 'Asd',
-        avatar: 'https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/123907218/original/fccdc48c5d7e319ae32d19898d11182290c3021d/create-cyberpunk-and-superhero-style-illustration-for-you.jpg',
-    },
-    {
-        login: 'Bsd',
-        avatar: 'https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/123907218/original/fccdc48c5d7e319ae32d19898d11182290c3021d/create-cyberpunk-and-superhero-style-illustration-for-you.jpg',
-    },
-    {
-        login: 'Csd',
-        avatar: 'https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/123907218/original/fccdc48c5d7e319ae32d19898d11182290c3021d/create-cyberpunk-and-superhero-style-illustration-for-you.jpg',
-    }
-]
+const initialState: UserPublicInfo[] = [];
+
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+    const response = await axios.get('http://localhost:8080/api/users');
+    return response.data;
+})
 
 const usersSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
+    },
+    extraReducers: builder => {
+        builder.addCase(fetchUsers.fulfilled, (state, action) =>  action.payload)
     }
 })
 

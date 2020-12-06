@@ -105,6 +105,7 @@ exports.signin = (req, res) => {
             username: user.username,
             email: user.email,
             roles: authorities,
+            avatar: user.avatar,
             accessToken: token,
         });
     });

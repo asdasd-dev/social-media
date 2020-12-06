@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom';
 import { useAppDispatch } from '../app/store';
 import { signin } from '../features/userSlice';
-import { Input, Button, SignUpPageContainer } from './SignUpPage';
+import { Input, Button, FormContainer } from './SignUpPage';
 
 
 interface SignInPageProps {
@@ -41,7 +41,7 @@ export const SignInPage: React.FC<SignInPageProps> = () => {
     }
 
     return (
-        <SignUpPageContainer>
+        <FormContainer>
             <h1>Sign in</h1>
             <p><a>Need an account?</a></p>
             <form>
@@ -53,6 +53,6 @@ export const SignInPage: React.FC<SignInPageProps> = () => {
                     Sign in
                 </Button>
             </form>
-        </SignUpPageContainer>
+        </FormContainer>
     )
 }

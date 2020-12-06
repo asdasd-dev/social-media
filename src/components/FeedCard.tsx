@@ -72,10 +72,10 @@ export const FeedCard: React.FC<FeedCardProps> = ({ article }) => {
                 <p>{article.content.substr(0, 100)}</p>
             </ArticleContent>
             <FeedCardFooter>
-                <ReadMoreLink to={`/article/${article.id}`} >Read more...</ReadMoreLink>
+                <ReadMoreLink to={`/article/${article._id}`} >Read more...</ReadMoreLink>
                 <div>
                     {article.tags.map(tag => {
-                        return <Tag outline>{tag}</Tag>
+                        return <Tag outline>{tag.name}</Tag>
                     })}
                 </div>
             </FeedCardFooter>

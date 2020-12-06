@@ -65,10 +65,16 @@ export const Navbar: React.FC = () => {
                 </>
                 }
                 {userState === 'user' &&
-                    <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: user dropdown)</NavLink>
+                    <>
+                        <NavLink to='/create-article' >Post article</NavLink>
+                        <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: user dropdown)</NavLink>
+                    </>
                 }
                 {userState === 'admin' &&
-                    <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: admin dropdown)</NavLink>
+                    <>
+                        <NavLink to='/create-article' >Post article</NavLink>
+                        <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: admin dropdown)</NavLink>
+                    </>
                 }
             </Links>
         </NavContainer>

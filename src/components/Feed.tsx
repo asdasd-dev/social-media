@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { RootState } from '../app/store';
 import { Article } from '../features/articles/articlesSlice'
 import { User, UserState, UserStatus } from '../features/userSlice';
+import { UserPublicInfo } from '../features/usersSlice';
+import { tag } from '../server/models';
 import { FeedCard } from './FeedCard';
 
 const FeedContainer = styled.div`
@@ -37,13 +39,22 @@ export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
     const articles = useSelector<RootState, Article[]>(state => state.articles.articles);
     const user = useSelector<RootState, User | undefined>(state => state.user.user);
     const userState = useSelector<RootState, UserStatus>(state => state.user.status);
+    const users = useSelector<RootState, UserPublicInfo[]>(state => state.users);
 
     const [articlesList, setArticlesList] = useState(articles);
+
+    useEffect(() => {
+        setArticlesList(articles)
+    }, [articles])
+
+
     const [selectedTab, setSelectedTab] = useState<'global' | 'user' | 'tag'>('global')
+
+    console.log('Articles when fetch: ', articles);
 
     useEffect(() => {
         if (selectedTag) {
-            setArticlesList(articles.filter(article => article.tags.includes(selectedTag)))
+            setArticlesList(articles.filter(article => article.tags.map(tagObj => tag.name).includes(selectedTag)))
             setSelectedTab('tag');
         }
     }, [selectedTag])
@@ -56,7 +67,7 @@ export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
 
     const onYourFeedClick = () => {
         removeTag();
-        setArticlesList(articles.filter(article => article.author === user?.username));
+        setArticlesList(articles.filter(article => article.author.username === user?.username));
         setSelectedTab('user');
     }
 

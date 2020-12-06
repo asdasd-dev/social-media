@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components'
 import { useAppDispatch } from '../app/store'
 import { signup } from '../features/userSlice'
 
-export const SignUpPageContainer = styled.div`
+export const FormContainer = styled.div`
     width: 100%;
     display: flex;
     flex-flow: column;
@@ -87,7 +87,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = () => {
     }
 
     return (
-        <SignUpPageContainer>
+        <FormContainer>
             <h1>Sign up</h1>
             <p><a>Have an account?</a></p>
             <form>
@@ -106,6 +106,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = () => {
                     Sign up
                 </Button>
             </form>
-        </SignUpPageContainer>
+        </FormContainer>
     )
 }

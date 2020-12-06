@@ -38,13 +38,14 @@ const MiniAvatar = styled.img`
 
 export const UserInfo: React.FC<UserInfoProps> = ({ article, nameColor }) => {
 
-    const userAvatar = useSelector<RootState, string>(state => state.users.find(user => user.login === article.author)!.avatar);
+    console.log(article);
+
 
     return (
         <UserInfoContainer className="UserInfo">
-            <MiniAvatar src={userAvatar}></MiniAvatar>
+            <MiniAvatar src={article.author.avatar} />
             <ArticleInfoContainer>
-                <ArticleAuthor nameColor={nameColor}>{article.author}</ArticleAuthor>
+                <ArticleAuthor nameColor={nameColor}>{article.author.username}</ArticleAuthor>
                 <ArticleDate>{article.date}</ArticleDate>
             </ArticleInfoContainer>
         </UserInfoContainer>

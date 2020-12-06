@@ -37,15 +37,11 @@ interface TagsProps {
 
 export const Tags: React.FC<TagsProps> = ({ onTagSelect }) => {
 
-    const tags = useSelector<RootState, string[]>(state => state.articles.tags);
-
     return (
         <TagsContainer>
             <TagsHeader>Popular tags</TagsHeader>
             <TagsList>
-                {tags.map(tag => 
-                    <Tag onClick={() => onTagSelect(tag)}>{tag}</Tag>
-                )}
+                TODO API
             </TagsList>
         </TagsContainer>
     )

@@ -1,3 +1,5 @@
+const User = require("../models/user.model");
+
 exports.allAccess = (req, res) => {
     res.status(200).send("Public Content.");
 };
@@ -13,3 +15,9 @@ exports.adminBoard = (req, res) => {
 exports.moderatorBoard = (req, res) => {
     res.status(200).send("Moderator Content.");
 };
+
+exports.allUsers = (req, res) => {
+    User.find({}, 'username avatar -_id').exec().then(result => {
+        res.status(200).send(result);
+    })
+}

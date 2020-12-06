@@ -8,12 +8,15 @@ import store from './app/store'
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom'
 import axios from 'axios'
+import { JsxEmit } from 'typescript';
+import { UserState } from './features/userSlice';
 
 // set authorization token if already exists in local storage
-let token = localStorage.getItem('token');
-if (token) {
+let user = localStorage.getItem('user');
+if (user !== null) {
+  let userObj = JSON.parse(user);
   axios.interceptors.request.use(function (config) {
-    config.headers['x-access-token'] = token;
+    config.headers['x-access-token'] = userObj.accessToken;
     return config;
   }, function (error) {
     return Promise.reject(error);

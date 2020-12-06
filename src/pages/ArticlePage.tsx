@@ -5,7 +5,7 @@ import { UserInfo } from '../components/UserInfo'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../app/store'
-import { Article } from '../features/articles/articlesSlice'
+import { Article, ArticlesState, getArticle } from '../features/articles/articlesSlice'
 import { Tag } from '../components/Tags'
 
 interface ArticlePageProps {
@@ -42,13 +42,16 @@ const Button = styled.button`
 export const ArticlePage: React.FC<ArticlePageProps> = () => {
 
     const { articleId } = useParams<{ articleId: string }>();
-    const article = useSelector<RootState, Article | undefined>(state => state.articles.articles.find(article => article.id === Number(articleId)));
+
+    const loadingStatus = useSelector<RootState, string>(state => state.articles.status);
+    const article = useSelector<RootState, Article | null>(state => getArticle(state, articleId));
 
     if (!article) {
         return (
             <ArticleHeader>
                 <Content>
-                    <h1>No such article</h1>
+                    {loadingStatus === 'idle' && <h1>No such article</h1>}
+                    {loadingStatus === 'loading' && <h1>Loading articles</h1>}
                 </Content>
             </ArticleHeader>
         );
@@ -60,14 +63,14 @@ export const ArticlePage: React.FC<ArticlePageProps> = () => {
                 <Content>
                     <h1>{article.title}</h1>
                     <UserInfo article={article} nameColor='white'/>
-                    <Button>Follow {article.author}</Button>
+                    <Button>Follow {article.author.username}</Button>
                     <Button>Favorite article</Button>
                 </Content>
             </ArticleHeader>
             <Content>
                 <p className='article-content'>{article.content}</p>
                 {article.tags.map(tag => {
-                    return <Tag outline>{tag}</Tag>
+                    return <Tag outline>{tag.name}</Tag>
                 })}
             </Content>
         </ArticlePageContainer>

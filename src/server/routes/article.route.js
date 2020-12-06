@@ -1,4 +1,4 @@
-const { default: authJwt } = require("../middleware/authJwt");
+const authJwt = require("../middleware/authJwt");
 const { article } = require("../models");
 const controller = require("../controllers/article.controller")
 
@@ -11,9 +11,9 @@ module.exports = function(app) {
     next();
   });
 
-  app.get("/api/article", controller.allArticles);
+  app.get("/api/articles", controller.allArticles);
 
   app.get("/api/article/:articleId");
 
-  app.post("/api/article"); 
+  app.post("/api/article", [authJwt.verifyToken], controller.postArticle); 
 };
