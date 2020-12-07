@@ -1,26 +1,30 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 
-exports.allAccess = (req, res) => {
-    res.status(200).send("Public Content.");
-};
-
-exports.userBoard = (req, res) => {
-    res.status(200).send("User Content.");
-};
-
-exports.adminBoard = (req, res) => {
-    res.status(200).send("Admin Content.");
-};
-
-exports.moderatorBoard = (req, res) => {
-    res.status(200).send("Moderator Content.");
-};
-
 exports.allUsers = (req, res) => {
     User.find({}, 'username avatar -_id').exec().then(result => {
         res.status(200).send(result);
     })
+}
+
+exports.userPublicInfo = (req, res) => {
+    User.findOne({ username: req.params.username }).populate('followers following articles favoriteArticles').exec((err, doc) => {
+        if (err) {
+            res.status(500).send();
+            return;
+        }
+
+        if (!doc) {
+            res.status(404).send();
+            return;
+        }
+        
+        return res.status(200).send({
+            username: doc.username,
+            avatar: doc.avatar,
+            about: doc.about
+        })
+    });
 }
 
 exports.updateUser = (req, res) => {
@@ -29,12 +33,12 @@ exports.updateUser = (req, res) => {
     User.findOneAndUpdate({ '_id': req.userId }, req.body, { new: true },
         (err, doc) => {
             if (err) {
-                res.status.send(500);
+                res.status(500).send();
                 return;
             }
         
             if (!doc) {
-                res.status.send(400);
+                res.status(400).send();
                 return;
             }
         

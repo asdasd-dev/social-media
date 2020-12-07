@@ -67,13 +67,15 @@ export const Navbar: React.FC = () => {
                 {userStatus === USER_STATUS.USER &&
                     <>
                         <NavLink to='/create-article' >Post article</NavLink>
-                        <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: user dropdown)</NavLink>
+                        <NavLink to='/settings'>Settings</NavLink>
+                        <NavLink to='/home' onClick={handleLogoutClick}>Logout</NavLink>
                     </>
                 }
                 {userStatus === USER_STATUS.ADMIN &&
                     <>
                         <NavLink to='/create-article' >Post article</NavLink>
-                        <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: admin dropdown)</NavLink>
+                        <NavLink to='/settings'>Settings</NavLink>
+                        <NavLink to='/home' onClick={handleLogoutClick}>Logout</NavLink>
                     </>
                 }
             </Links>

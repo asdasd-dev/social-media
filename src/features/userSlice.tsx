@@ -35,12 +35,7 @@ export const signin = createAsyncThunk(
             localStorage.setItem('user', JSON.stringify(response.data));
 
             // send x-access-token with all requests
-            axios.interceptors.request.use(config => {
-                config.headers['x-access-token'] = response.data.accessToken;
-                return config;
-            }, error => {
-                return Promise.reject(error);
-            });
+            axios.defaults.headers.common["x-access-token"] = response.data.accessToken;
 
             return response.data;
         }
@@ -99,6 +94,7 @@ const userSlice = createSlice({
     reducers: {
         logout: () => {
             localStorage.removeItem('user');
+            delete axios.defaults.headers.common["x-access-token"];
             return {
                 status: USER_STATUS.GUEST
             } as UserGuestState

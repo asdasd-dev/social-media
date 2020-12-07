@@ -9,16 +9,12 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom'
 import axios from 'axios'
 
+
 // set authorization token if already exists in local storage
 let user = localStorage.getItem('user');
 if (user !== null) {
   let userObj = JSON.parse(user);
-  axios.interceptors.request.use(function (config) {
-    config.headers['x-access-token'] = userObj.accessToken;
-    return config;
-  }, function (error) {
-    return Promise.reject(error);
-  });
+  axios.defaults.headers.common["x-access-token"] = userObj.accessToken;
 }
 
 

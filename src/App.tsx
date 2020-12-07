@@ -16,6 +16,7 @@ import { USER_STATUS } from './features/types';
 import { UserSettingsPage } from './pages/UserSettingsPage';
 import { Content } from './components/styled/Content';
 import { Banner, FullWidthContent } from './components/styled/FullWidthContent';
+import { UserPage } from './pages/UserPage';
 
 
 const AppContainer = styled.div`
@@ -61,12 +62,12 @@ export const App: React.FC = () => {
             <HomePage />
           </MainSection>
         </Route>
-        <Route path="/signup">
+        <Route exact path="/signup">
           <Content>
             <SignUpPage />
           </Content>
         </Route>
-        <Route path="/signin">
+        <Route exact path="/signin">
           <Content>
             <SignInPage />
           </Content>
@@ -78,6 +79,9 @@ export const App: React.FC = () => {
           <Content>
             <PostArticlePage />
           </Content>
+        </Route>
+        <Route exact path="/user/:userId">
+          <UserPage />
         </Route>
         <Route exact path="/settings">
           <Content>

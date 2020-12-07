@@ -53,5 +53,15 @@ export const getUserByUsername = (username: string) => (state: RootState) => {
     if (state.users.status === FETCH_STATUS.PENDING) {
         return FETCH_STATUS.PENDING;
     }
-    return state.users.users.find(user => user.username === username)?.avatar;
+    return state.users.users.find(user => user.username === username);
+}
+
+export const fetchUserPublicInfo =  async (username: string) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/api/user/${username}`);
+        return response.data;
+    }
+    catch (err) {
+        return Promise.reject(err.response)
+    }
 }

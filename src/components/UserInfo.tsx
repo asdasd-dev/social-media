@@ -1,7 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { Article } from '../features/types'
+import { Article, FETCH_STATUS } from '../features/types'
 import { getUserByUsername } from '../features/usersSlice'
 
 interface UserInfoProps {
@@ -23,6 +24,10 @@ const ArticleAuthor = styled.p<{ nameColor?: string }>`
     margin: 0 5px;
     font-size: .875em;
     padding: 0;
+    
+    &:hover {
+        cursor: pointer;
+    }
 `
 
 const ArticleDate = styled.p`
@@ -34,17 +39,38 @@ const MiniAvatar = styled.img`
     width: 32px;
     border-radius: 32px;
     vertical-align: middle;
+
+    &:hover {
+        cursor: pointer;
+    }
 `
 
 export const UserInfo: React.FC<UserInfoProps> = ({ article, nameColor }) => {
 
-    const avatarSrc = useSelector(getUserByUsername(article.author.username));
+    const userObject = useSelector(getUserByUsername(article.author.username));
+    const history = useHistory();
+
+    if (userObject === FETCH_STATUS.PENDING) {
+        return <span>Loading...</span>
+    }
+
+    if (userObject === FETCH_STATUS.FAILURE) {
+        return <span>Error loading user</span>
+    }
+
+    if (!userObject) {
+        return <span>No such user</span>
+    }
+
+    const handleAuthorClick = (e: React.MouseEvent) => {
+        history.push(`/user/${userObject.username}`);
+    }
 
     return (
         <UserInfoContainer className="UserInfo">
-            <MiniAvatar src={avatarSrc} />
+            <MiniAvatar onClick={handleAuthorClick} src={userObject.avatar} />
             <ArticleInfoContainer>
-                <ArticleAuthor nameColor={nameColor}>{article.author.username}</ArticleAuthor>
+                <ArticleAuthor onClick={handleAuthorClick} nameColor={nameColor}>{userObject.username}</ArticleAuthor>
                 <ArticleDate>{article.date}</ArticleDate>
             </ArticleInfoContainer>
         </UserInfoContainer>

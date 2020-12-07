@@ -54,7 +54,7 @@ const articlesSlice = createSlice({
         builder.addCase(fetchArticles.fulfilled, (state, action) => {
             return {
                 status: FETCH_STATUS.SUCCESS,
-                articles: action.payload
+                articles: action.payload || []
             }
         });
         builder.addCase(fetchArticles.rejected, (state, action) => {
