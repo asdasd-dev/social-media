@@ -5,15 +5,14 @@ import styled from 'styled-components';
 import { RootState } from '../app/store';
 import { USER_STATUS } from '../features/types';
 import { logout } from '../features/userSlice';
+import { Content } from './styled/Content';
 
-const NavContainer = styled.div`
+const NavContainer = styled(Content)`
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
     height: 70px;
-    max-width: 1000px;
-    margin: auto;
     padding: 0 20px;
 
 

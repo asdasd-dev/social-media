@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { ArticleHeader, Content } from '../App'
 import styled from 'styled-components'
 import { UserInfo } from '../components/UserInfo'
 import { useParams } from 'react-router-dom'
@@ -8,6 +7,9 @@ import { RootState } from '../app/store'
 import { Article, FETCH_STATUS } from '../features/types'
 import { Tag } from '../components/Tags'
 import { getArticleById } from '../features/articles/articlesSlice'
+import { Button } from '../components/styled/Button'
+import { FullWidthContent, ArticleHeader } from '../components/styled/FullWidthContent'
+import { Content } from '../components/styled/Content'
 
 interface ArticlePageProps {
 }
@@ -22,21 +24,12 @@ const ArticlePageContainer = styled.div`
         margin-bottom: 20px;
     }
 
-    .article-content {
-        margin-bottom: 50px;
+    ${Button} {
+        margin: 0 5px;
     }
-`
 
-const Button = styled.button`
-    background-color: transparent;
-    color: white;
-    border: 1px solid white;
-    border-radius: 10px;
-    outline: none;
-    height: 2em;
-    margin: 0 5px;
-    &:hover {
-        cursor: pointer;
+    ${Content} > p {
+        margin-bottom: 50px;
     }
 `
 
@@ -50,11 +43,11 @@ export const ArticlePage: React.FC<ArticlePageProps> = () => {
     if (!article) {
         return (
             <ArticleHeader>
-                <Content>
+                <FullWidthContent>
                     {loadingStatus === FETCH_STATUS.SUCCESS && <h1>No such article</h1>}
                     {loadingStatus === FETCH_STATUS.PENDING && <h1>Loading articles</h1>}
                     {loadingStatus === FETCH_STATUS.FAILURE && <h1>Error when fetch</h1>}
-                </Content>
+                </FullWidthContent>
             </ArticleHeader>
         );
     }
@@ -66,12 +59,12 @@ export const ArticlePage: React.FC<ArticlePageProps> = () => {
                 <Content>
                     <h1>{article.title}</h1>
                     <UserInfo article={article} nameColor='white'/>
-                    <Button>Follow {article.author.username}</Button>
-                    <Button>Favorite article</Button>
+                    <Button outline size='sm'>Follow {article.author.username}</Button>
+                    <Button outline size='sm'>Favorite article</Button>
                 </Content>
             </ArticleHeader>
             <Content>
-                <p className='article-content'>{article.content}</p>
+                <p>{article.content}</p>
                 {article.tags.map(tag => {
                     return <Tag outline>{tag}</Tag>
                 })}

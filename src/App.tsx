@@ -14,15 +14,11 @@ import { fetchUsers } from './features/usersSlice';
 import { fetchArticles } from './features/articles/articlesSlice';
 import { USER_STATUS } from './features/types';
 import { UserSettingsPage } from './pages/UserSettingsPage';
+import { Content } from './components/styled/Content';
+import { Banner, FullWidthContent } from './components/styled/FullWidthContent';
 
 
 const AppContainer = styled.div`
-`
-
-export const Content = styled.div`
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
 `
 
 const MainSection = styled(Content)`
@@ -39,37 +35,10 @@ const MainSection = styled(Content)`
     }
 `
 
-const Header = styled.div`
-    color: white;
-    background-color: ${props => props.theme.primaryColor};
-    box-shadow: inset 0 0 10px rgba(0,0,0,.4);
-
-    h1 {
-        margin: 0;
-    }
-`
-
-export const ArticleHeader = styled(Header)`
-    background-color: grey;
-    padding: 5px;
-
-    h1 {
-      margin-bottom: 20px;
-    }
-`
-
-const BannerHeader = styled(Header)`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-`
 
 export const App: React.FC = () => {
 
   const userStatus = useSelector<RootState, USER_STATUS>(state => state.user.status);
-  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -83,12 +52,10 @@ export const App: React.FC = () => {
       <Switch>
         <Route exact path="/">
           {userStatus === 'guest' && 
-          <BannerHeader>
-            <Content>
-              <h1>I'm poster</h1>
-              <p>A place to share your knowledge.</p>
-            </Content>
-          </BannerHeader>
+          <Banner>
+            <h1>I'm poster</h1>
+            <p>A place to share your knowledge.</p>
+          </Banner>
           }
           <MainSection>
             <HomePage />

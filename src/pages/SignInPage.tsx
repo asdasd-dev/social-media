@@ -2,9 +2,10 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom';
 import { useAppDispatch } from '../app/store';
+import { Button } from '../components/styled/Button';
+import { Input } from '../components/styled/Input';
 import { signin } from '../features/userSlice';
-import { Input, Button, FormContainer } from './SignUpPage';
-
+import { FormContainer } from './SignUpPage';
 
 interface SignInPageProps {
 

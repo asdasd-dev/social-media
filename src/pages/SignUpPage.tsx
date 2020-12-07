@@ -3,6 +3,8 @@ import { response } from 'express'
 import React, { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { useAppDispatch } from '../app/store'
+import { Button } from '../components/styled/Button'
+import { Input } from '../components/styled/Input'
 import { signup } from '../features/userSlice'
 
 export const FormContainer = styled.div`
@@ -21,36 +23,6 @@ export const FormContainer = styled.div`
         & > * {
             margin-bottom: 20px;
         }
-    }
-`
-
-const inputStyle = css`
-    font-size: 1.25em;
-    height: 40px;
-    padding: 0 20px;
-    font-family: inherit;
-    border-radius: 10px;
-    outline: none;
-`
-
-export const Input = styled.input`
-    ${inputStyle}
-    border: 1px solid lightgray;
-    color: inherit;
-    &::placeholder {
-        opacity: .5;
-    }
-`
-
-export const Button = styled.button`
-    ${inputStyle}
-    background-color: ${props => props.theme.primaryColor};
-    color: white;
-    border: none;
-    margin-top: 20px;
-
-    &:hover{
-        cursor: pointer;
     }
 `
 

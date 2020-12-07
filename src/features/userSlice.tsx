@@ -59,6 +59,7 @@ export const updateUser = createAsyncThunk(
     async (data: UserUpdateRequest, thunkApi) => {
         try {
             const response = await axios.put<UserUpdateResponse>("http://localhost:8080/api/user", data);
+            console.log(response.data);
             const updatedUserObject = getUserObjectFromLocalStorage();
             if (updatedUserObject) {
                 updatedUserObject.email = response.data.email;
@@ -122,6 +123,4 @@ export default userSlice.reducer;
 
 export const { logout } = userSlice.actions; 
 
-export const getUser = () => (state: RootState) => {
-    return state.user;
-}
+export const getUser = () => (state: RootState) => state.user

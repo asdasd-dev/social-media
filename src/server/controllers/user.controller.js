@@ -26,7 +26,7 @@ exports.allUsers = (req, res) => {
 exports.updateUser = (req, res) => {
     if (req.body.password)
         req.body.password = bcrypt.hashSync(req.body.password, 8)
-    User.findOneAndUpdate({ '_id': req.userId }, req.body,
+    User.findOneAndUpdate({ '_id': req.userId }, req.body, { new: true },
         (err, doc) => {
             if (err) {
                 res.status.send(500);
@@ -39,9 +39,9 @@ exports.updateUser = (req, res) => {
             }
         
             res.status(200).send({
-                email: req.body.email, 
-                avatar: req.body.avatar, 
-                about: req.body.about, 
+                email: doc.email, 
+                avatar: doc.avatar, 
+                about: doc.about, 
             });
         }
 );

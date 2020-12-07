@@ -2,8 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { Button } from '../components/styled/Button';
+import { Input } from '../components/styled/Input';
+import { TextArea } from '../components/styled/TextArea';
 import { postArticle } from '../features/articles/articlesSlice';
-import { Button, FormContainer, Input } from './SignUpPage';
+import { FormContainer } from './SignUpPage';
 
 interface PostArticlePageProps {
 
@@ -17,12 +20,8 @@ const PostArticlePageContainer = styled.div`
     }
 `
 
-export const TextArea = styled(Input)`
-    padding: 20px;
-`
-
 export const PostArticlePage: React.FC<PostArticlePageProps> = () => {
-
+    
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [content, setContent] = useState('');
