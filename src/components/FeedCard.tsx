@@ -1,9 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
-import { RootState } from '../app/store';
-import { Article } from '../features/articles/articlesSlice';
+import { Article } from '../features/types';
 import { Tag } from './Tags'
 import { UserInfo } from './UserInfo';
 
@@ -72,10 +70,10 @@ export const FeedCard: React.FC<FeedCardProps> = ({ article }) => {
                 <p>{article.content.substr(0, 100)}</p>
             </ArticleContent>
             <FeedCardFooter>
-                <ReadMoreLink to={`/article/${article._id}`} >Read more...</ReadMoreLink>
+                <ReadMoreLink to={`/article/${article.id}`} >Read more...</ReadMoreLink>
                 <div>
                     {article.tags.map(tag => {
-                        return <Tag outline>{tag.name}</Tag>
+                        return <Tag outline>{tag}</Tag>
                     })}
                 </div>
             </FeedCardFooter>

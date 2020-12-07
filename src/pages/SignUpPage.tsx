@@ -37,6 +37,9 @@ export const Input = styled.input`
     ${inputStyle}
     border: 1px solid lightgray;
     color: inherit;
+    &::placeholder {
+        opacity: .5;
+    }
 `
 
 export const Button = styled.button`

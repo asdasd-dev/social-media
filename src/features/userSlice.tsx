@@ -1,29 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { user } from '../server/models';
-import usersSlice from './usersSlice';
+import { RootState } from '../app/store';
+import { SignupData, UserState, USER_STATUS, UserGuestState, UserUserState, UserAdminState, User, UserUpdateRequest, UserUpdateResponse } from './types';
 
-
-export interface UserState {
-    status: UserStatus,
-    user?: User
-}
-
-export type User = {
-    id: string,
-    username: string,
-    email: string,
-    avatar: string,
-    accessToken:string,
-    roles: string[]
-}
-
-export type UserStatus = 'guest' | 'user' | 'admin';
-
-interface SignupData {
-    username: string;
-    email: string;
-    password: string;
+const getUserObjectFromLocalStorage: () => User | null = () => {
+    let localStorageUser = localStorage.getItem('user');
+    if (localStorageUser) {
+        return JSON.parse(localStorageUser);
+    }
+    else {
+        return null;
+    }
 }
 
 export const signup = createAsyncThunk(
@@ -60,39 +47,73 @@ export const signin = createAsyncThunk(
         catch (err) {
             const response = err.response;
 
-            if (response.status >= 400 && response.status <= 500) {
+            if (response.status >= 400) {
                 return thunkApi.rejectWithValue(response.data);
             }
         }
     }
 )
 
-const initialState: UserState = {
-    status: 'guest'
+export const updateUser = createAsyncThunk(
+    'user/updateUser',
+    async (data: UserUpdateRequest, thunkApi) => {
+        try {
+            const response = await axios.put<UserUpdateResponse>("http://localhost:8080/api/user", data);
+            const updatedUserObject = getUserObjectFromLocalStorage();
+            if (updatedUserObject) {
+                updatedUserObject.email = response.data.email;
+                updatedUserObject.avatar = response.data.avatar;
+                updatedUserObject.about = response.data.about;
+            }
+            localStorage.setItem('user', JSON.stringify(updatedUserObject));
+            return updatedUserObject;
+        }
+        catch (err) {
+            const response = err.response;
+
+            if (response.status >= 400) {
+                return thunkApi.rejectWithValue(response.data);
+            }
+        }
+    }
+)
+
+let initialState: UserState = {
+    status: USER_STATUS.GUEST
 }
 
-let localStorageUser = localStorage.getItem('user');
 
-if (localStorageUser) {
-    let userObject = JSON.parse(localStorageUser);
-    initialState.user = userObject as User;
-    initialState.status = initialState.user.roles.includes('ROLE_ADMIN') ? 'admin' : 'user';
+
+let localStorageUserObject = getUserObjectFromLocalStorage();
+if (localStorageUserObject) {
+    initialState = {
+        status: localStorageUserObject.roles.includes('ROLE_ADMIN') ? USER_STATUS.ADMIN : USER_STATUS.USER,
+        user: localStorageUserObject as User
+    }
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        logout: state => {
-            state.status = 'guest';
+        logout: () => {
             localStorage.removeItem('user');
-            delete state.user;
+            return {
+                status: USER_STATUS.GUEST
+            } as UserGuestState
         }
     },
     extraReducers: builder => {
         builder.addCase(signin.fulfilled, (state, action) => {
-            state.status = action.payload.roles.includes('ROLE_ADMIN') ? 'admin' : 'user'
-            state.user = action.payload;
+            return {
+                status: action.payload.roles.includes('ROLE_ADMIN') ? USER_STATUS.ADMIN : USER_STATUS.USER,
+                user: action.payload as User
+            }
+        })
+        builder.addCase(updateUser.fulfilled, (state, action) => {
+            if (state.status !== USER_STATUS.GUEST && action.payload) {
+                state.user = action.payload;
+            }
         })
     }
 })
@@ -100,3 +121,7 @@ const userSlice = createSlice({
 export default userSlice.reducer;
 
 export const { logout } = userSlice.actions; 
+
+export const getUser = () => (state: RootState) => {
+    return state.user;
+}

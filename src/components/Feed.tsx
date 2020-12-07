@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import {  useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../app/store';
-import { Article } from '../features/articles/articlesSlice'
-import { User, UserState, UserStatus } from '../features/userSlice';
-import { UserPublicInfo } from '../features/usersSlice';
+import { getArticles } from '../features/articles/articlesSlice'
+import { ArticlesState, FETCH_STATUS, Article, UserState, USER_STATUS } from '../features/types';
 import { tag } from '../server/models';
 import { FeedCard } from './FeedCard';
 
 const FeedContainer = styled.div`
 `
-
 const FeedTags = styled.div`
     border-bottom: 1px solid grey;
     height: 30px;
@@ -36,45 +34,52 @@ interface FeedProps {
 
 export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
     
-    const articles = useSelector<RootState, Article[]>(state => state.articles.articles);
-    const user = useSelector<RootState, User | undefined>(state => state.user.user);
-    const userState = useSelector<RootState, UserStatus>(state => state.user.status);
-    const users = useSelector<RootState, UserPublicInfo[]>(state => state.users);
+    const articlesObject = useSelector<RootState, ArticlesState>(getArticles());
+    const userObject = useSelector<RootState, UserState>(state => state.user);
 
-    const [articlesList, setArticlesList] = useState(articles);
+    const [articlesList, setArticlesList] = useState<Article[]>([]);
 
     useEffect(() => {
-        setArticlesList(articles)
-    }, [articles])
+        if (articlesObject.status === FETCH_STATUS.SUCCESS) {
+            setArticlesList(articlesObject.articles)
+        }
+    }, [articlesObject])
 
 
     const [selectedTab, setSelectedTab] = useState<'global' | 'user' | 'tag'>('global')
 
-    console.log('Articles when fetch: ', articles);
+    console.log('Articles when fetch: ', articlesList);
 
     useEffect(() => {
-        if (selectedTag) {
-            setArticlesList(articles.filter(article => article.tags.map(tagObj => tag.name).includes(selectedTag)))
+        if (selectedTag && articlesObject.status === FETCH_STATUS.SUCCESS) {
+            setArticlesList(articlesObject.articles.filter(article => article.tags.includes(selectedTag)))
             setSelectedTab('tag');
         }
     }, [selectedTag])
 
     const onGlobalClick = () => {
         removeTag();
-        setArticlesList(articles);
+        if (articlesObject.status === FETCH_STATUS.SUCCESS) {
+            setArticlesList(articlesObject.articles);
+        }
+        else {
+            setArticlesList([]);
+        }
         setSelectedTab('global'); 
     }
 
     const onYourFeedClick = () => {
         removeTag();
-        setArticlesList(articles.filter(article => article.author.username === user?.username));
+        if (articlesObject.status === FETCH_STATUS.SUCCESS && userObject.status !== USER_STATUS.GUEST) {
+            setArticlesList(articlesObject.articles.filter(article => article.author.username === userObject.user.username));
+        }
         setSelectedTab('user');
     }
 
     return (
         <FeedContainer>
             <FeedTags>
-                { userState !== 'guest' && 
+                { userObject.status !== USER_STATUS.GUEST && 
                 <TagLink selected={selectedTab === 'user'} onClick={() => onYourFeedClick()}>Your&nbsp;Feed</TagLink>
                 }
                 <TagLink selected={selectedTab === 'global'} onClick={() => onGlobalClick()}>Global&nbsp;Feed</TagLink>

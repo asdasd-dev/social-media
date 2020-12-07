@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchArticles, postArticle } from '../features/articles/articlesSlice';
+import { postArticle } from '../features/articles/articlesSlice';
 import { Button, FormContainer, Input } from './SignUpPage';
 
 interface PostArticlePageProps {
@@ -17,14 +17,9 @@ const PostArticlePageContainer = styled.div`
     }
 `
 
-const TextArea = styled(Input)`
+export const TextArea = styled(Input)`
     padding: 20px;
 `
-
-const handlePostArticle = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-}
 
 export const PostArticlePage: React.FC<PostArticlePageProps> = () => {
 
@@ -52,6 +47,11 @@ export const PostArticlePage: React.FC<PostArticlePageProps> = () => {
     }, [])
 
     const handleSubmit = (e: React.MouseEvent) => {
+        e.preventDefault();
+
+        if (!isTagsValid)
+            return;
+            
         const body = {
             title,
             description,

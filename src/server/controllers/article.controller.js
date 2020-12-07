@@ -7,22 +7,24 @@ const Article = db.article;
 const Tag = db.tag;
 
 exports.allArticles = (req, res) => {
-    Article.find({}).populate('author', 'username avatar -_id').populate('tags', 'name -_id').exec((err, articles) => {
+    Article.find({}).populate('tags').populate('author', 'username avatar -_id').exec((err, articles) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-
-        console.log(articles);
 
         if (!articles.length) {
             res.status(204).send({ message: 'Sorry, there are no articles at the moment!' });
             return;
         }
 
-        articles.forEach(article => {
-            article.author = article.author.username;
-        })
+        articles = articles.map(articleDoc => {
+            let returnArticle = articleDoc.toObject();
+            console.log('tags: ', returnArticle.tags);
+            returnArticle.tags = returnArticle.tags.map(tag => tag.name);
+            returnArticle.id = returnArticle._id;
+            return returnArticle;
+        });
 
         res.status(200).send(articles)
     })

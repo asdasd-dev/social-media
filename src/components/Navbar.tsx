@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { RootState } from '../app/store';
-import { logout, UserStatus } from '../features/userSlice';
+import { USER_STATUS } from '../features/types';
+import { logout } from '../features/userSlice';
 
 const NavContainer = styled.div`
     display: flex;
@@ -42,7 +43,7 @@ const NavLink = styled(Link)`
 
 export const Navbar: React.FC = () => {
 
-    const userState = useSelector<RootState, UserStatus>(state => state.user.status)
+    const userStatus = useSelector<RootState, USER_STATUS>(state => state.user.status)
 
     const history = useHistory();
     const dispatch = useDispatch();
@@ -58,19 +59,19 @@ export const Navbar: React.FC = () => {
             <Logo onClick={() => history.push('/')}>I'm poster</Logo>
             <Links>
                 <NavLink to='/'>Home</NavLink>
-                {userState === 'guest' &&
+                {userStatus === USER_STATUS.GUEST &&
                 <>
                     <NavLink to='/signin'>Sign in</NavLink>
                     <NavLink to='/signup'>Sign up</NavLink>
                 </>
                 }
-                {userState === 'user' &&
+                {userStatus === USER_STATUS.USER &&
                     <>
                         <NavLink to='/create-article' >Post article</NavLink>
                         <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: user dropdown)</NavLink>
                     </>
                 }
-                {userState === 'admin' &&
+                {userStatus === USER_STATUS.ADMIN &&
                     <>
                         <NavLink to='/create-article' >Post article</NavLink>
                         <NavLink to='/home' onClick={handleLogoutClick}>Logout (TODO: admin dropdown)</NavLink>

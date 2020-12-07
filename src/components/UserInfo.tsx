@@ -1,8 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { RootState } from '../app/store'
-import { Article } from '../features/articles/articlesSlice'
+import { Article } from '../features/types'
+import { getUserByUsername } from '../features/usersSlice'
 
 interface UserInfoProps {
     article: Article;
@@ -38,12 +38,11 @@ const MiniAvatar = styled.img`
 
 export const UserInfo: React.FC<UserInfoProps> = ({ article, nameColor }) => {
 
-    console.log(article);
-
+    const avatarSrc = useSelector(getUserByUsername(article.author.username));
 
     return (
         <UserInfoContainer className="UserInfo">
-            <MiniAvatar src={article.author.avatar} />
+            <MiniAvatar src={avatarSrc} />
             <ArticleInfoContainer>
                 <ArticleAuthor nameColor={nameColor}>{article.author.username}</ArticleAuthor>
                 <ArticleDate>{article.date}</ArticleDate>

@@ -4,15 +4,16 @@ import styled from 'styled-components';
 import { Navbar } from './components/Navbar'
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from './app/store';
-import { UserStatus } from './features/userSlice';
 import { Route, Switch } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { SignUpPage } from './pages/SignUpPage';
 import { SignInPage } from './pages/SignInPage';
 import { ArticlePage } from './pages/ArticlePage';
 import { PostArticlePage } from './pages/PostArticlePage';
-import { fetchUsers, UserPublicInfo } from './features/usersSlice';
-import { Article, fetchArticles } from './features/articles/articlesSlice';
+import { fetchUsers } from './features/usersSlice';
+import { fetchArticles } from './features/articles/articlesSlice';
+import { USER_STATUS } from './features/types';
+import { UserSettingsPage } from './pages/UserSettingsPage';
 
 
 const AppContainer = styled.div`
@@ -67,7 +68,8 @@ const BannerHeader = styled(Header)`
 
 export const App: React.FC = () => {
 
-  const userStatus = useSelector<RootState, UserStatus>(state => state.user.status);
+  const userStatus = useSelector<RootState, USER_STATUS>(state => state.user.status);
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -108,6 +110,11 @@ export const App: React.FC = () => {
         <Route exact path="/create-article">
           <Content>
             <PostArticlePage />
+          </Content>
+        </Route>
+        <Route exact path="/settings">
+          <Content>
+            <UserSettingsPage />
           </Content>
         </Route>
       </Switch>

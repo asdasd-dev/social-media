@@ -5,8 +5,9 @@ import { UserInfo } from '../components/UserInfo'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../app/store'
-import { Article, ArticlesState, getArticle } from '../features/articles/articlesSlice'
+import { Article, FETCH_STATUS } from '../features/types'
 import { Tag } from '../components/Tags'
+import { getArticleById } from '../features/articles/articlesSlice'
 
 interface ArticlePageProps {
 }
@@ -44,18 +45,20 @@ export const ArticlePage: React.FC<ArticlePageProps> = () => {
     const { articleId } = useParams<{ articleId: string }>();
 
     const loadingStatus = useSelector<RootState, string>(state => state.articles.status);
-    const article = useSelector<RootState, Article | null>(state => getArticle(state, articleId));
+    const article = useSelector<RootState, Article | null>(getArticleById(articleId));
 
     if (!article) {
         return (
             <ArticleHeader>
                 <Content>
-                    {loadingStatus === 'idle' && <h1>No such article</h1>}
-                    {loadingStatus === 'loading' && <h1>Loading articles</h1>}
+                    {loadingStatus === FETCH_STATUS.SUCCESS && <h1>No such article</h1>}
+                    {loadingStatus === FETCH_STATUS.PENDING && <h1>Loading articles</h1>}
+                    {loadingStatus === FETCH_STATUS.FAILURE && <h1>Error when fetch</h1>}
                 </Content>
             </ArticleHeader>
         );
     }
+
 
     return (
         <ArticlePageContainer>
@@ -70,7 +73,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = () => {
             <Content>
                 <p className='article-content'>{article.content}</p>
                 {article.tags.map(tag => {
-                    return <Tag outline>{tag.name}</Tag>
+                    return <Tag outline>{tag}</Tag>
                 })}
             </Content>
         </ArticlePageContainer>

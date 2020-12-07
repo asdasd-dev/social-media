@@ -1,9 +1,8 @@
-import { combineReducers, configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch } from 'react-redux'
-import { sortAndDeduplicateDiagnostics } from 'typescript'
-import artilesReducer, { Article, ArticlesState } from '../features/articles/articlesSlice'
-import userReducer, { User } from '../features/userSlice'
-import usersReducer, { UserPublicInfo } from '../features/usersSlice'
+import artilesReducer from '../features/articles/articlesSlice'
+import userReducer from '../features/userSlice'
+import usersReducer from '../features/usersSlice'
 
 
 const store = configureStore({

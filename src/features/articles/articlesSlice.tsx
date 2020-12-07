@@ -1,25 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { response } from 'express';
-import { act } from 'react-dom/test-utils';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios, {  AxiosResponse } from 'axios'
+import e from 'express';
 import { RootState } from '../../app/store';
-import { fetchUsers } from '../usersSlice';
-
-export interface Article {
-    _id: string,
-    author: { username: string, avatar: string },
-    date: Date,
-    title: string,
-    description: string,
-    content: string,
-    tags: { name: string }[]
-}
-
-export interface ArticlesState {
-    tags?: string[],
-    status: 'idle' | 'loading'
-    articles: Article[],
-}
+import { ArticlesState, FETCH_STATUS, Article } from '../types';
 
 export const postArticle = createAsyncThunk(
     'articles/post',
@@ -30,23 +13,29 @@ export const postArticle = createAsyncThunk(
             return response.data;
         }
         catch (err) {
-            return thunkApi.rejectWithValue(err.response.data);
+            return thunkApi.rejectWithValue(err.response.data.message);
         }
     }
 )
 
 export const fetchArticles = createAsyncThunk(
     'articles/fetchArticles',
-    async () => {
-        const response = await axios.get('http://localhost:8080/api/articles');
-        return response.data;
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/articles');
+            return response.data as Article[];
+        }
+        catch (err) {
+            console.log(err);
+            return Promise.reject(err.response.data.message);
+        }
     }
 )
 
 const initialState: ArticlesState = {
-    status: 'idle',
+    status: FETCH_STATUS.SUCCESS,
     articles: []
-}
+} as ArticlesState
 
 const articlesSlice = createSlice({
     name: 'articles',
@@ -57,24 +46,39 @@ const articlesSlice = createSlice({
         builder.addCase(postArticle.fulfilled, (state, action) => {
             console.log(action.payload.message);
         });
-        builder.addCase(fetchArticles.pending, (state) => {
-            state.status = 'loading';
+        builder.addCase(fetchArticles.pending, () => {
+            return {
+                status: FETCH_STATUS.PENDING
+            }
         });
         builder.addCase(fetchArticles.fulfilled, (state, action) => {
-            if (action.payload) {
-                state.articles = action.payload;
+            return {
+                status: FETCH_STATUS.SUCCESS,
+                articles: action.payload
             }
-            state.status = 'idle';
         });
-        builder.addCase(fetchArticles.rejected, (state) => {
-            state.status = 'idle';
+        builder.addCase(fetchArticles.rejected, (state, action) => {
+            return {
+                status: FETCH_STATUS.FAILURE,
+                reason: action.payload as string
+            }
         })
     }
     
 })
 
-export const getArticle = (state: RootState, articleId: string) => {
-    return state.articles.articles.find(article => article._id === articleId) || null;
+export const getArticleById = (articleId: string) => (state: RootState) => {
+    if (state.articles.status === FETCH_STATUS.SUCCESS) {
+        const foundArticle = state.articles.articles.find(article => article.id === articleId);
+        if (foundArticle) {
+            return foundArticle;
+        }
+    }
+    return null;
+}
+
+export const getArticles = () => (state: RootState) => {
+    return state.articles;
 }
 
 export default articlesSlice.reducer;
