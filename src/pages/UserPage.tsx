@@ -31,7 +31,7 @@ const UserAvatar = styled.img`
 
 export const UserPage: React.FC<UserPageProps> = () => {
 
-    const { userId } = useParams<{userId: string}>();
+    const { username } = useParams<{username: string}>();
 
     const [userObject, setUserObject] = useState<{username: string, avatar: string, about: string} | null>(null);
     const [loadingStatus, setLoadingStatus] = useState<FETCH_STATUS>(FETCH_STATUS.PENDING)
@@ -39,7 +39,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
     useEffect(() => {
         let didCancel = false;
         setLoadingStatus(FETCH_STATUS.PENDING);
-        fetchUserPublicInfo(userId)
+        fetchUserPublicInfo(username)
         .then(res => {
             if (!didCancel) {
                 setLoadingStatus(FETCH_STATUS.SUCCESS);
@@ -76,7 +76,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                 <p>{userObject.about}</p>
             </FullWidthContent>
             <Content>
-                <h3>Feed</h3>
+                <Feed />
             </Content>
         </UserPageContainer>
     )

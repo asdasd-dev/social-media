@@ -51,17 +51,6 @@ export const App: React.FC = () => {
     <AppContainer>
       <Navbar />
       <Switch>
-        <Route exact path="/">
-          {userStatus === 'guest' && 
-          <Banner>
-            <h1>I'm poster</h1>
-            <p>A place to share your knowledge.</p>
-          </Banner>
-          }
-          <MainSection>
-            <HomePage />
-          </MainSection>
-        </Route>
         <Route exact path="/signup">
           <Content>
             <SignUpPage />
@@ -80,13 +69,24 @@ export const App: React.FC = () => {
             <PostArticlePage />
           </Content>
         </Route>
-        <Route exact path="/user/:userId">
+        <Route exact path="/user/:username">
           <UserPage />
         </Route>
         <Route exact path="/settings">
           <Content>
             <UserSettingsPage />
           </Content>
+        </Route>
+        <Route path={['/tag/:tagname', '/']}>
+          {userStatus === 'guest' && 
+          <Banner>
+            <h1>I'm poster</h1>
+            <p>A place to share your knowledge.</p>
+          </Banner>
+          }
+          <MainSection>
+            <HomePage />
+          </MainSection>
         </Route>
       </Switch>
     </AppContainer>

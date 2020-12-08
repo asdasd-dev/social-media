@@ -31,11 +31,7 @@ const TagsList = styled.div`
     flex-flow: row wrap;
 `
 
-interface TagsProps {
-    onTagSelect: (tagName: string) => void,
-}
-
-export const Tags: React.FC<TagsProps> = ({ onTagSelect }) => {
+export const Tags: React.FC = () => {
 
     return (
         <TagsContainer>

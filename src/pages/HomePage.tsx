@@ -23,13 +23,10 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = () => {
-
-    const [selectedTag, setSelectedTag] = useState<string | undefined>();
-
     return (
         <HomePageContainer>
-            <Feed selectedTag={selectedTag} removeTag={() => setSelectedTag(undefined)}/>
-            <Tags onTagSelect={tagName => setSelectedTag(tagName)}/>
+            <Feed />
+            <Tags />
         </HomePageContainer>
     )
 }

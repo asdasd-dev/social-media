@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {  useSelector } from 'react-redux';
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { RootState } from '../app/store';
 import { getArticles } from '../features/articles/articlesSlice'
 import { ArticlesState, FETCH_STATUS, Article, UserState, USER_STATUS } from '../features/types';
+import { getUser } from '../features/userSlice';
 import { tag } from '../server/models';
 import { FeedCard } from './FeedCard';
 
@@ -24,67 +26,81 @@ const TagLink = styled.a<{selected?: boolean}>`
     }
     ${props => props.selected && `
     color: ${props.theme.primaryColor};
-    border-bottom: 1px solid ${props.theme.primaryColor};
+    box-shadow: 0 1px 0 ${props.theme.primaryColor};
     `}
 `
-interface FeedProps {
-    selectedTag?: string,
-    removeTag: () => void
-}
 
-export const Feed: React.FC<FeedProps> = ({ selectedTag, removeTag }) => {
+export const Feed: React.FC = () => {
     
     const articlesObject = useSelector<RootState, ArticlesState>(getArticles());
-    const userObject = useSelector<RootState, UserState>(state => state.user);
+    const userObject = useSelector<RootState, UserState>(getUser());
+
+    const {username, tagname} = useParams<{username?: string, tagname?:string}>();
+    const history = useHistory();
+
+    console.log('tagname: ', tagname);
 
     const [articlesList, setArticlesList] = useState<Article[]>([]);
 
+    const [selectedTab, setSelectedTab] = useState<'userArticles' | 'yourFeed' | 'global' | 'tag'>(tagname ? 'tag' : username ? 'userArticles' : 'global');
     useEffect(() => {
         if (articlesObject.status === FETCH_STATUS.SUCCESS) {
-            setArticlesList(articlesObject.articles)
+            if (selectedTab === 'global') {
+                setArticlesList(articlesObject.articles);
+            }
+            else if (userObject.status !== USER_STATUS.GUEST && selectedTab === 'yourFeed') {
+                setArticlesList(articlesObject.articles.filter(article => article.author.username === userObject.user.username));
+            }
+            else if (selectedTab === 'userArticles') {
+                setArticlesList(articlesObject.articles.filter(article => article.author.username === username));
+            }
+            else if (selectedTab === 'tag' && tagname) {
+                setArticlesList(articlesObject.articles.filter(article => article.tags.includes(tagname)));
+            }
         }
-    }, [articlesObject])
-
-
-    const [selectedTab, setSelectedTab] = useState<'global' | 'user' | 'tag'>('global')
-
-    console.log('Articles when fetch: ', articlesList);
-
-    useEffect(() => {
-        if (selectedTag && articlesObject.status === FETCH_STATUS.SUCCESS) {
-            setArticlesList(articlesObject.articles.filter(article => article.tags.includes(selectedTag)))
-            setSelectedTab('tag');
-        }
-    }, [selectedTag])
+    }, [selectedTab, articlesObject])
 
     const onGlobalClick = () => {
-        removeTag();
-        if (articlesObject.status === FETCH_STATUS.SUCCESS) {
-            setArticlesList(articlesObject.articles);
-        }
-        else {
-            setArticlesList([]);
-        }
-        setSelectedTab('global'); 
+        history.push('/');
+        setSelectedTab('global');
     }
 
     const onYourFeedClick = () => {
-        removeTag();
-        if (articlesObject.status === FETCH_STATUS.SUCCESS && userObject.status !== USER_STATUS.GUEST) {
-            setArticlesList(articlesObject.articles.filter(article => article.author.username === userObject.user.username));
+        history.push('/');
+        setSelectedTab('yourFeed');
+    }
+
+    const onUserArticlesTabClick = () => {
+        setSelectedTab('userArticles')
+    }
+
+    let feedOptions = [];
+
+    if (username) {
+        feedOptions = [
+            <TagLink selected={selectedTab === 'userArticles'} onClick={onUserArticlesTabClick}>Articles</TagLink>
+        ]
+    }
+    else {
+        feedOptions = [
+            <TagLink selected={selectedTab === 'global'} onClick={onGlobalClick}>Global feed</TagLink>
+        ]
+        if (userObject.status !== USER_STATUS.GUEST) {
+            feedOptions.unshift(
+                <TagLink selected={selectedTab === 'yourFeed'} onClick={onYourFeedClick}>Your feed</TagLink>
+            )
         }
-        setSelectedTab('user');
+        if (tagname) {
+            feedOptions.push(
+                <TagLink selected={selectedTab === 'tag'}>{tagname}</TagLink>
+            )
+        }
     }
 
     return (
         <FeedContainer>
             <FeedTags>
-                { userObject.status !== USER_STATUS.GUEST && 
-                <TagLink selected={selectedTab === 'user'} onClick={() => onYourFeedClick()}>Your&nbsp;Feed</TagLink>
-                }
-                <TagLink selected={selectedTab === 'global'} onClick={() => onGlobalClick()}>Global&nbsp;Feed</TagLink>
-                {selectedTag && 
-                <TagLink selected={selectedTab === 'tag'}>{selectedTag}</TagLink>}
+                {feedOptions}
             </FeedTags>
             {articlesList.map(article => 
                 <FeedCard article={article} />
