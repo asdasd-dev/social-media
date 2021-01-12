@@ -1,19 +1,34 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios, {  AxiosResponse } from 'axios'
-import e from 'express';
+import axios from 'axios'
 import { RootState } from '../../app/store';
-import { ArticlesState, FETCH_STATUS, Article } from '../types';
+import { article } from '../../server/models';
+import { ArticlesState, FETCH_STATUS, Article, ArticleFull } from '../types';
 
 export const postArticle = createAsyncThunk(
     'articles/post',
     async (data: {title: string, description: string, content: string, tags: string[]}, thunkApi) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/article', data);
+            const response = await axios.post('http://localhost:8080/api/articles', data);
             thunkApi.dispatch(fetchArticles());
             return response.data;
         }
         catch (err) {
             return thunkApi.rejectWithValue(err.response.data.message);
+        }
+    }
+)
+
+export const postComment = createAsyncThunk(
+    'articles/postComment',
+    async (data: {text: string, articleId: string}, thunkApi) => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/articles/${data.articleId}/comment`, 
+                                                {text: data.text});
+            return response.data;
+        }
+        catch (err) {
+            console.log(err);
+            return Promise.reject(err);
         }
     }
 )
@@ -28,6 +43,20 @@ export const fetchArticles = createAsyncThunk(
         catch (err) {
             console.log(err);
             return Promise.reject(err.response.data.message);
+        }
+    }
+)
+
+export const fetchArticleFullInfo = createAsyncThunk(
+    'articles/fetchArticle',
+    async (data: {articleId: string}, {rejectWithValue}) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/articles/${data.articleId}`);
+            return response.data as ArticleFull;
+        }
+        catch (err) {
+            console.log(err);
+            return Promise.reject(err);
         }
     }
 )
@@ -62,6 +91,8 @@ const articlesSlice = createSlice({
                 status: FETCH_STATUS.FAILURE,
                 reason: action.payload as string
             }
+        })
+        builder.addCase(postComment.fulfilled, (state, action) => {
         })
     }
     

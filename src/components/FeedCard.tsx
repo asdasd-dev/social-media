@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
 import { Article } from '../features/types';
-import { Tag } from './Tags'
+import { Tag } from './Tag'
 import { UserInfo } from './UserInfo';
 
 styled.img`
@@ -61,13 +61,12 @@ interface FeedCardProps {
 } 
 
 export const FeedCard: React.FC<FeedCardProps> = ({ article }) => {
-
     return (
         <FeedCardContainer>
             <UserInfo article={article}/>
             <ArticleContent>
                 <h1>{article.title}</h1>
-                <p>{article.content.substr(0, 100)}</p>
+                <p>{article.description}</p>
             </ArticleContent>
             <FeedCardFooter>
                 <ReadMoreLink to={`/article/${article.id}`} >Read more...</ReadMoreLink>

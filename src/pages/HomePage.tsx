@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Feed } from '../components/Feed';
+import { HomePageFeed } from '../components/HomePageFeed';
 import { Tags } from '../components/Tags';
 
 const HomePageContainer = styled.div`
@@ -25,7 +26,7 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = () => {
     return (
         <HomePageContainer>
-            <Feed />
+            <HomePageFeed />
             <Tags />
         </HomePageContainer>
     )

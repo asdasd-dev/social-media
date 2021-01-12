@@ -1,3 +1,5 @@
+import { ArticleComment } from "../types"
+
 export enum FETCH_STATUS {
     PENDING = 'pending',
     SUCCESS = 'success',
@@ -82,14 +84,23 @@ export interface UserUpdateResponse {
 
 // articlesSlice
 
+export interface ArticleFull extends Article {
+}
+
+export interface ArticleBrief extends Article {
+    comments: [],
+    content: ''
+}
+
 export interface Article {
     id: string,
     author: { username: string, avatar: string },
     date: Date,
     title: string,
     description: string,
+    tags: string[],
     content: string,
-    tags: string[]
+    comments: ArticleComment[]
 }
 
 export interface ArticlesPendingState {

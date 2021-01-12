@@ -53,7 +53,7 @@ export const updateUser = createAsyncThunk(
     'user/updateUser',
     async (data: UserUpdateRequest, thunkApi) => {
         try {
-            const response = await axios.put<UserUpdateResponse>("http://localhost:8080/api/user", data);
+            const response = await axios.put<UserUpdateResponse>("http://localhost:8080/api/users", data);
             console.log(response.data);
             const updatedUserObject = getUserObjectFromLocalStorage();
             if (updatedUserObject) {

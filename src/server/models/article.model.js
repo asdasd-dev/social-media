@@ -19,6 +19,10 @@ const articleSchema = new mongoose.Schema({
   favorite: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
+  }],
+  comments: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment"
   }]
 })
 

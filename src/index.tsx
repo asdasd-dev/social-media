@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
-import { ThemeProvider } from 'styled-components';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import store from './app/store'
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -22,6 +22,14 @@ const theme = {
   primaryColor: '#005AB5'
 }
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    * {
+      box-sizing: border-box;
+    }
+  }
+`
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
@@ -31,6 +39,7 @@ ReactDOM.render(
         </Router>
       </ThemeProvider>
     </Provider>
+    <GlobalStyle/>
   </React.StrictMode>,
   document.getElementById('root')
 );

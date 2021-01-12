@@ -1,14 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const cookierParser = require('cookie-parser');
 
 const app = express();
 
-const dbConfig = require('./config/db.config')
 const db = require('./models');
-const Article = db.article;
-const User = db.user;
+const dbConfig = require('./config/db.config');
 const Role = db.role;
 
 db.mongoose.connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
@@ -63,24 +60,14 @@ function initial() {
 const corsOptions = {
   origin: "http://localhost:3000"
 };
-
 app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
 app.use(bodyParser.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// simple route
-app.get("/api", (req, res) => {
-  res.json({ message: "ez api" });
-});
-
 // routes
-require('./routes/auth.routes')(app);
-require('./routes/user.routes')(app);
-require('./routes/article.route')(app);
+app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/users', require('./routes/user.routes'));
+app.use('/api/articles', require('./routes/article.route'));
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

@@ -7,6 +7,7 @@ import { Feed } from '../components/Feed'
 import { Button } from '../components/styled/Button'
 import { Content } from '../components/styled/Content'
 import { FullWidthContent } from '../components/styled/FullWidthContent'
+import { UserPageFeed } from '../components/UserPageFeed'
 import { FETCH_STATUS, UserPublicInfo, UserState } from '../features/types'
 import { fetchUserPublicInfo, getUserByUsername } from '../features/usersSlice'
 
@@ -15,18 +16,26 @@ interface UserPageProps {
 
 const UserPageContainer = styled.div`
 
-    ${FullWidthContent} {
+    ${FullWidthContent} > ${Content} {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 20px;
+
+        p {
+            margin: 5px;
+        }
+
+        ${Button} {
+            align-self: flex-end;
+        }
     }
 `
 
 const UserAvatar = styled.img`
-    width: 150px;
-    border-radius: 150px;
+    width: 120px;
+    border-radius: 120px;
 `
 
 export const UserPage: React.FC<UserPageProps> = () => {
@@ -70,13 +79,15 @@ export const UserPage: React.FC<UserPageProps> = () => {
     return (
         <UserPageContainer>
             <FullWidthContent>
-                <UserAvatar src={userObject.avatar}/>
-                <h2>{userObject.username}</h2>
-                <p>TODO: Follow</p>
-                <p>{userObject.about}</p>
+                <Content>
+                    <UserAvatar src={userObject.avatar}/>
+                    <h2>{userObject.username}</h2>
+                    <p>{userObject.about}</p>
+                    <Button outline size='sm'>+ Follow {username}</Button>
+                </Content>
             </FullWidthContent>
             <Content>
-                <Feed />
+                <UserPageFeed />
             </Content>
         </UserPageContainer>
     )

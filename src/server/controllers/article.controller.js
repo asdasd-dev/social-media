@@ -1,13 +1,16 @@
-const { ObjectId } = require("mongodb");
 const { article } = require("../models");
 const db = require("../models");
 
-const User = db.user;
 const Article = db.article;
+const Comment = db.comment;
 const Tag = db.tag;
 
 exports.allArticles = (req, res) => {
-    Article.find({}).populate('tags').populate('author', 'username avatar -_id').exec((err, articles) => {
+    Article.find({})
+        .populate('tags')
+        .populate('author', 'username avatar -_id')
+        .select('-content')
+        .exec((err, articles) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -20,7 +23,6 @@ exports.allArticles = (req, res) => {
 
         articles = articles.map(articleDoc => {
             let returnArticle = articleDoc.toObject();
-            console.log('tags: ', returnArticle.tags);
             returnArticle.tags = returnArticle.tags.map(tag => tag.name);
             returnArticle.id = returnArticle._id;
             return returnArticle;
@@ -29,6 +31,29 @@ exports.allArticles = (req, res) => {
         res.status(200).send(articles)
     })
 };
+
+exports.articleFullInfo = (req, res) => {
+    Article.findOne({ _id: req.params.articleId })
+        .populate('tags', '-articles -__v -_id')
+        .populate('author', 'username avatar -_id')
+        .populate('comments', '-article -__v -_id')
+        .exec((err, article) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+    
+            if (!article) {
+                res.status(400).send({ message: 'No such article!' });
+                return;
+            }
+
+            const returnArticle = article.toObject();
+            returnArticle.tags = returnArticle.tags.map(tag => tag.name);
+
+            res.status(200).send(returnArticle);
+        });
+}
 
 exports.postArticle = (req, res) => {
     const article = new Article({
@@ -68,8 +93,41 @@ exports.postArticle = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-
             res.status(200).send({ message: 'Article successfully created!' });
         })
     }).catch(err => console.log(err));
+}
+
+exports.postComment = (req, res) => {
+    Article.findOne({ _id: req.params.articleId }, async (err, article) => {
+        console.log(req.body);
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        if (!article) {
+            res.status(400).send({ message: 'No such article!' });
+            return;
+        }
+
+        const comment = new Comment({
+            text: req.body.text,
+            author: req.body.userId,
+            article: req.params.articleId
+        });
+        await comment.save();
+
+        console.log(article.toObject());
+        console.log(comment.toObject());
+
+        article.comments.push(comment);
+        await article.save((err, createdArticle) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.status(200).send({ message: 'Comment successfully added!' })
+        });
+    })
 }

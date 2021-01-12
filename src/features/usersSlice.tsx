@@ -58,7 +58,7 @@ export const getUserByUsername = (username: string) => (state: RootState) => {
 
 export const fetchUserPublicInfo =  async (username: string) => {
     try {
-        const response = await axios.get(`http://localhost:8080/api/user/${username}`);
+        const response = await axios.get(`http://localhost:8080/api/users/${username}`);
         return response.data;
     }
     catch (err) {
