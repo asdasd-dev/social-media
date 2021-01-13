@@ -8,7 +8,7 @@ export const FullWidthContent = styled.div`
 `
 
 export const ArticleHeader = styled(FullWidthContent)`
-    background-color: grey;
+    background-color: #494949;
 
     h1 {
       margin-bottom: 20px;

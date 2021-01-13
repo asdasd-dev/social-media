@@ -79,10 +79,10 @@ export const App: React.FC = () => {
         </Route>
         <Route path={['/tag/:tagname', '/']}>
           {userStatus === 'guest' && 
-          <Banner>
-            <h1>I'm poster</h1>
-            <p>A place to share your knowledge.</p>
-          </Banner>
+            <Banner>
+              <h1>I'm poster</h1>
+              <p>A place to share your knowledge.</p>
+            </Banner>
           }
           <MainSection>
             <HomePage />

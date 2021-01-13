@@ -1,5 +1,7 @@
-import React from 'react';
+import Axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Tag } from './Tag';
 
 const TagsContainer = styled.div`
     display: flex;
@@ -17,11 +19,24 @@ const TagsList = styled.div`
 
 export const Tags: React.FC = () => {
 
+    const [tags, setTags] = useState<string[]>([]);
+    useEffect(() => {
+        let didCancel = false;
+        Axios.get('http://localhost:8080/api/tags').then(result => {
+            !didCancel && result.status < 300 && setTags(result.data);
+        });
+        return () => { didCancel = true };
+    }, [])
+
+    console.log(tags);
+
     return (
         <TagsContainer>
             <TagsHeader>Popular tags</TagsHeader>
             <TagsList>
-                TODO API
+                {tags.map(tag => 
+                    <Tag outline={true}>{tag}</Tag>
+                )}
             </TagsList>
         </TagsContainer>
     )

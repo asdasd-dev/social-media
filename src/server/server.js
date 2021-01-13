@@ -68,6 +68,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/articles', require('./routes/article.route'));
+app.use('/api/tags', require('./routes/tag.controller'));
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

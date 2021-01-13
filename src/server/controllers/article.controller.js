@@ -1,4 +1,3 @@
-const { article } = require("../models");
 const db = require("../models");
 
 const Article = db.article;
