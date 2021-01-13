@@ -35,7 +35,16 @@ exports.articleFullInfo = (req, res) => {
     Article.findOne({ _id: req.params.articleId })
         .populate('tags', '-articles -__v -_id')
         .populate('author', 'username avatar -_id')
-        .populate('comments', '-article -__v -_id')
+        .populate({
+            path: 'comments',
+            model: 'Comment',
+            populate: {
+                path: 'author',
+                model: 'User',
+                select: 'username -_id'
+            },
+            select: '-article -__v -_id'
+        })
         .exec((err, article) => {
             if (err) {
                 res.status(500).send({ message: err });
@@ -49,6 +58,11 @@ exports.articleFullInfo = (req, res) => {
 
             const returnArticle = article.toObject();
             returnArticle.tags = returnArticle.tags.map(tag => tag.name);
+            returnArticle.comments = returnArticle.comments.map(comment => {
+                comment.username = comment.author.username;
+                delete comment.author;
+                return comment;
+            })
 
             res.status(200).send(returnArticle);
         });
@@ -112,7 +126,7 @@ exports.postComment = (req, res) => {
 
         const comment = new Comment({
             text: req.body.text,
-            author: req.body.userId,
+            author: req.userId,
             article: req.params.articleId
         });
         await comment.save();

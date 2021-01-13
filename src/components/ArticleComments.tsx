@@ -5,6 +5,10 @@ import { ArticleComment, PageStatus } from '../types'
 import { postComment } from '../features/articles/articlesSlice'
 import { useAppDispatch } from '../app/store'
 import { current } from '@reduxjs/toolkit'
+import { useHistory } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { getUser } from '../features/userSlice'
+import { USER_STATUS } from '../features/types'
 
 const ArticleCommentsContainer = styled.div`
 `
@@ -41,6 +45,27 @@ const CommentBottom = styled.div`
     align-items: center;
 `
 
+const CommentMeta = styled.div`
+    display: flex;
+    flex-flow: row nowrap;
+    width: 50%;
+    justify-content: flex-start;
+    & > * {
+        margin: 0 5px;
+        vertical-align: middle;
+    }
+`
+
+const CommentAuthor = styled.a`
+    &:hover {
+        cursor: pointer;
+    }
+    color: ${props => props.theme.primaryColor};
+`
+
+const CommentDate = styled.span`
+`
+
 const Pages = styled.div`
     display: flex;
     justify-content: center;
@@ -65,8 +90,11 @@ interface ArticleCommentsProps {
 export const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId, articleComments, onPostComment }) => {
 
     const dispatch = useAppDispatch();
+    const history = useHistory();
 
-    const [commentInput, setCommentInput] = useState<string>('')
+    const user = useSelector(getUser());
+
+    const [commentInput, setCommentInput] = useState<string>('');
     const [commentsPage, setCommentsPage] = useState<number>(0);
 
     function handlePostComment() {
@@ -82,21 +110,25 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId, art
 
     const currentComments = [];
     for (let i = commentsPage * 5; i < Math.min((commentsPage + 1) * 5, articleComments.length); i++) {
+        const currentComment = articleComments[i];
+        let date = new Date(currentComment.date);
+        let dateString = date.getDate() + ' ' + date.toLocaleString('default', { month: 'short' }) + ', ' + date.getFullYear();
         currentComments.push(
             <CommentContainer>
                 <CommentTop>
                     <p>
-                        {articleComments[i].text}
+                        {currentComment.text}
                     </p>
                 </CommentTop>
                 <CommentBottom>
+                    <CommentMeta>
+                        <CommentAuthor onClick={() => history.push(`/user/${currentComment.username}`)}>{currentComment.username}</CommentAuthor>
+                        <CommentDate>{dateString}</CommentDate>
+                    </CommentMeta>
                     <div>
-                        <span><img></img></span>
-                        <span>{articleComments[i].username}</span>
-                        <span>{articleComments[i].date}</span>
-                    </div>
-                    <div>
-                        <Button size="sm">Remove</Button>
+                        {user.status !== USER_STATUS.GUEST && user.user.username === currentComment.username &&
+                            <Button size="sm">Remove</Button>
+                        }
                     </div>
                 </CommentBottom>
             </CommentContainer>
